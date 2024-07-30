@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="output.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+    <style>
+      /* Style for the dropdown */
+      select {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f9f9f9; /* Light background color */
+        color: #333; /* Dark text color */
+        font-size: 16px; /* Increased font size */
+        cursor: pointer; /* Pointer cursor */
+        transition: border-color 0.3s; /* Smooth border color transition */
+      }
+
+      select:hover {
+        border-color: #007bff; /* Change border color on hover */
+      }
+
+      select:focus {
+        outline: none; /* Remove default outline */
+        border-color: #0056b3; /* Darker border on focus */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow on focus */
+      }
+    </style>
+  </head>
+  <body class="font-nunito">
+    <header class="p-5 text-xl text-white bg-WebBlue">
+      <div class="flex items-center justify-between">
+        <div>
+          <img
+            src="./images/Pïïr Amit - Copy.png"
+            alt="Pïïr Amit Logo"
+            class="h-[50px]"
+          />
+        </div>
+        <button id="menu">
+          <i class="text-3xl md:hidden ri-menu-line"></i>
+        </button>
+        <nav class="hidden md:inline-block">
+          <ul class="flex items-center gap-4">
+            <li><a href="./dashboard.html">Home</a></li>
+            <li><a href="./clinic-page.html">Clinics</a></li>
+            <li><a href="./information-hub.html">Information Hub</a></li>
+            <li>
+              <div class="hidden md:inline-block">
+                <label for="languageDropdown" class="sr-only"
+                  >Select Language</label
+                >
+                <select id="languageDropdown" class="p-2 rounded">
+                  <option value="en">English</option>
+                  <option value="ar">Arabic</option>
+                </select>
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div id="nav-links" class="hidden">
+        <ul class="flex flex-col items-end gap-4 pt-6 h-[50vh]">
+          <li><a href="./dashboard.html">Home</a></li>
+            <li><a href="./clinic-page.html">Clinics</a></li>
+            <li><a href="./information-hub.html">Information Hub</a></li>
+            <li><a href="./appointment-page.html">Appointment</a></li>
+          <li>
+            <div class="flex justify-end gap-2">
+              <label for="languageDropdown" class="sr-only"
+                >Select Language</label
+              >
+              <select id="languageDropdown" class="p-2 rounded">
+                <option value="en">English</option>
+                <option value="ar">Arabic</option>
+              </select>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <main>
+      <section>
+        <div class="flex flex-col justify-center md:flex-row md:gap-28">
+          <div class="my-10 md:w-2/5">
+            <p class="text-5xl font-medium">
+              Fill the form to book your appointment
+            </p>
+            <p class="my-10">
+              Book your appointment with ease using our online form. Simply fill
+              in your details, select your preferred date and time, and specify
+              the reason for your visit. Our team will review your request and
+              confirm your appointment as soon as possible.
+            </p>
+            <button
+              class="py-4 my-10 font-medium text-white rounded-md shadow-2xl bg-WebBlue shadow-WebBlue px-14"
+            >
+              <i class="ri-map-pin-line"></i>
+              Book Now
+            </button>
+          </div>
+          <div class="">
+            <img src="./images/doctors.jpg" alt="doctors" class="mt-12" />
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="flex justify-center p-10 bg-WhiteSmoke">
+          <form id="bookingForm" class="w-1/2 p-10 bg-white rounded-lg">
+            <div class="my-6">
+              <label for="fullName" class="block mb-2">Full Name</label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                class="w-full p-2 border border-gray-300 rounded"
+                required
+              />
+            </div>
+            <div class="my-6">
+              <label for="clinic" class="block mb-2">Clinic</label>
+              <input
+                type="text"
+                id="clinic"
+                name="clinic"
+                class="w-full p-2 border border-gray-300 rounded"
+                required
+              />
+            </div>
+            <div class="my-6">
+              <label for="date" class="block mb-2">Date</label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                class="w-full p-2 border border-gray-300 rounded"
+                required
+              />
+            </div>
+            <div class="my-6">
+              <label for="time" class="block mb-2">Time</label>
+              <input
+                type="time"
+                id="time"
+                name="time"
+                class="w-full p-2 border border-gray-300 rounded"
+                required
+              />
+            </div>
+            <div class="my-6">
+              <label for="reason" class="block mb-2"
+                >Reason for Appointment</label
+              >
+              <textarea
+                id="reason"
+                name="reason"
+                class="w-full p-2 border border-gray-300 rounded"
+                required
+              ></textarea>
+            </div>
+            <div class="my-6">
+              <label for="acceptTerms" class="flex items-center">
+                <input
+                  type="checkbox"
+                  id="acceptTerms"
+                  name="acceptTerms"
+                  class="mr-2"
+                  required
+                />
+                I accept the terms and conditions
+              </label>
+            </div>
+            <div class="my-6">
+              <button
+                type="submit"
+                class="px-6 py-4 font-medium text-white rounded-md shadow-2xl bg-WebBlue shadow-WebBlue"
+              >
+                <i class="ri-map-pin-line"></i>
+                Book Now
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+    <footer class="py-10 text-white bg-WebBlue">
+      <div
+        class="flex flex-col md:flex-row justify-around p-5 flex-wrap max-w-[1000px] mx-auto"
+      >
+        <div class="flex-1">
+          <h4 class="pb-[5px] mb-4 border-b-[1px] border-white font-medium">
+            Locations
+          </h4>
+          <ul class="flex flex-col gap-2">
+            <li>South Sudan</li>
+            <li>Juba City</li>
+            <li>Shirikat</li>
+          </ul>
+        </div>
+        <div class="flex-1">
+          <h4 class="pb-[5px] mb-4 border-b-[1px] border-white font-medium">
+            Quick Links
+          </h4>
+          <ul class="flex flex-col gap-2">
+            <li>Home</li>
+            <li>Services</li>
+            <li>About Us</li>
+            <li>Contact</li>
+          </ul>
+        </div>
+        <div class="flex-1">
+          <h4 class="pb-[5px] mb-4 border-b-[1px] border-white font-medium">
+            Contact Info
+          </h4>
+          <ul class="flex flex-col gap-2">
+            <li>+211926851806</li>
+            <li>piiramit@gmail.com</li>
+            <li>piiramithealthcaremail.Com</li>
+          </ul>
+        </div>
+        <div class="flex-1">
+          <h4 class="pb-[5px] mb-4 border-b-[1px] border-white font-medium">
+            Follow Us
+          </h4>
+          <ul class="flex flex-col gap-2">
+            <li>Facebook</li>
+            <li>Twitter</li>
+            <li>Instagram</li>
+            <li>LinkedIn</li>
+          </ul>
+        </div>
+      </div>
+      <div class="">
+        <hr class="my-2 border-t border-white" />
+        <p class="pt-5 text-center">
+          &copy; Piir Amit Health Hub Co. 2024. All Rights Reserved
+        </p>
+      </div>
+    </footer>
+    <script src="./clinic-page.js"></script>
+    <!-- Google Translation API Script -->
+<script>
+  const apiKey = 'AIzaSyC9yoGRDDWGz90FW5ZwSCz8U9O_RZ7PZsc';
+
+  // Store the original texts
+  let originalTexts = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const textElements = document.querySelectorAll('h1, h2, p, li, span, button, h3, h4, h5, h6, a');
+    textElements.forEach((el, index) => {
+      originalTexts.push({ text: el.innerText, element: el }); // Store both text and element reference
+    });
+  });
+
+  document.getElementById('languageDropdown').addEventListener('change', function() {
+    const languageCode = this.value;
+    if (languageCode) {
+      if (languageCode === 'en') {
+        resetToDefault();
+      } else {
+        translatePage(languageCode);
+      }
+    }
+  });
+
+  function resetToDefault() {
+    // Restore the original text
+    originalTexts.forEach(item => {
+      item.element.innerText = item.text;
+    });
+  }
+
+  function translatePage(languageCode) {
+    // Select only elements that should be translated, excluding links
+    const textElements = originalTexts
+      .filter(item => item.element.tagName.toLowerCase() !== 'a')
+      .map(item => item.element);
+
+    const textsToTranslate = textElements.map(el => el.innerText);
+
+    fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: textsToTranslate,
+        target: languageCode,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      const translations = data.data.translations;
+      translations.forEach((translation, index) => {
+        textElements[index].innerText = translation.translatedText;
+      });
+    })
+    .catch(error => console.error('Error translating:', error));
+  }
+</script>
+<script>
+  document.getElementById('bookingForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Gather form data
+    const fullName = document.getElementById('fullName').value;
+    const clinic = document.getElementById('clinic').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const reason = document.getElementById('reason').value;
+
+    // Generate a random ticket number
+    const ticketNumber = Math.floor(Math.random() * 1000000);
+
+    // Retrieve the authorization token from sessionStorage
+    const token = sessionStorage.getItem('authToken'); // Make sure the token is stored during login
+
+    // Send data to the server
+    fetch('http://localhost:5000/appointments/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        user_id: fullName,
+        clinic: clinic,
+        date: date,
+        time: time,
+        reason: reason,
+        ticketNumber: ticketNumber,
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok: ' + response.statusText);
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Display booking notification
+      const notification = document.createElement('div');
+      notification.innerHTML = `
+        <h2>Booking Received</h2>
+        <p>Your ticket number is: <strong>${data.ticketNumber || ticketNumber}</strong></p>
+      `;
+      notification.style.border = '1px solid #4CAF50';
+      notification.style.padding = '10px';
+      notification.style.marginTop = '20px';
+      notification.style.backgroundColor = '#e7f9e7';
+      notification.style.color = '#4CAF50';
+      notification.style.borderRadius = '5px';
+
+      document.body.appendChild(notification);
+
+      // Optionally reset the form
+      document.getElementById('bookingForm').reset();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('There was an error processing your booking. Please try again.');
+    });
+  });
+</script>
+  </body>
+</html>

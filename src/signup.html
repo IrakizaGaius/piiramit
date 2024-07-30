@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet"
+  />
+  <title>Signup Form</title>
+  <link rel="stylesheet" href="./css/signup.css" />
+  <style>
+    /* Style for the dropdown */
+    select {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9; /* Light background color */
+      color: #333; /* Dark text color */
+      font-size: 16px; /* Increased font size */
+      cursor: pointer; /* Pointer cursor */
+      transition: border-color 0.3s; /* Smooth border color transition */
+    }
+
+    select:hover {
+      border-color: #007bff; /* Change border color on hover */
+    }
+
+    select:focus {
+      outline: none; /* Remove default outline */
+      border-color: #0056b3; /* Darker border on focus */
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow on focus */
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <div>
+      <label for="languageDropdown" class="sr-only">Select Language</label>
+      <select id="languageDropdown" class="p-2 rounded">
+        <option value="en">English</option>
+        <option value="ar">Arabic</option>
+      </select>
+    </div>
+    <div class="signup-form">
+      <h1>Create Account</h1>
+      <p>Please fill in your details</p>
+      <form id="signupForm">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter your username" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" required />
+
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" placeholder="Confirm password" required />
+
+        <button type="submit">Sign up</button>
+      </form>
+      <p>Already have an account? <a href="login.html">Sign in</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/users/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: username, email, password }),
+        });
+
+        if (response.ok) {
+          // alert('Signup successful!');
+          window.location.href = 'login.html';
+        } else {
+          const errorData = await response.json();
+          alert('Error: ' + errorData.error);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+      }
+    });
+  </script>
+  <!-- Google Translation API Script -->
+<script>
+  const apiKey = 'AIzaSyC9yoGRDDWGz90FW5ZwSCz8U9O_RZ7PZsc';
+
+  // Store the original texts
+  let originalTexts = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const textElements = document.querySelectorAll('h1, h2, p, li, span, button, h3, h4, h5, h6, a');
+    textElements.forEach((el, index) => {
+      originalTexts.push({ text: el.innerText, element: el }); // Store both text and element reference
+    });
+  });
+
+  document.getElementById('languageDropdown').addEventListener('change', function() {
+    const languageCode = this.value;
+    if (languageCode) {
+      if (languageCode === 'en') {
+        resetToDefault();
+      } else {
+        translatePage(languageCode);
+      }
+    }
+  });
+
+  function resetToDefault() {
+    // Restore the original text
+    originalTexts.forEach(item => {
+      item.element.innerText = item.text;
+    });
+  }
+
+  function translatePage(languageCode) {
+    // Select only elements that should be translated, excluding links
+    const textElements = originalTexts
+      .filter(item => item.element.tagName.toLowerCase() !== 'a')
+      .map(item => item.element);
+
+    const textsToTranslate = textElements.map(el => el.innerText);
+
+    fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: textsToTranslate,
+        target: languageCode,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      const translations = data.data.translations;
+      translations.forEach((translation, index) => {
+        textElements[index].innerText = translation.translatedText;
+      });
+    })
+    .catch(error => console.error('Error translating:', error));
+  }
+</script>
+</body>
+</html>

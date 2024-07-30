@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet"
+  />
+  <title>Login Form</title>
+  <link rel="stylesheet" href="./css/login.css" />
+  <style>
+    /* Style for the dropdown */
+    select {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9; /* Light background color */
+      color: #333; /* Dark text color */
+      font-size: 16px; /* Increased font size */
+      cursor: pointer; /* Pointer cursor */
+      transition: border-color 0.3s; /* Smooth border color transition */
+    }
+
+    select:hover {
+      border-color: #007bff; /* Change border color on hover */
+    }
+
+    select:focus {
+      outline: none; /* Remove default outline */
+      border-color: #0056b3; /* Darker border on focus */
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow on focus */
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div>
+      <label for="languageDropdown" class="sr-only">Select Language</label>
+      <select id="languageDropdown" class="p-2 rounded">
+        <option value="en">English</option>
+        <option value="ar">Arabic</option>
+      </select>
+    </div>
+    <div class="login-form">
+      <h1>Welcome</h1>
+      <h2>Welcome to Piir Amit Healthcare App</h2>
+      <p>Please enter your details</p>
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" required />
+
+        <div class="remember-me">
+          <input type="checkbox" id="remember" />
+          <label for="remember">Remember me</label>
+        </div>
+
+        <button type="submit">Sign in</button>
+      </form>
+      <p>Don't have an account yet? <a href="signup.html">Sign up</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const rememberMe = document.getElementById('remember').checked;
+
+      try {
+        const response = await fetch('http://localhost:5000/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          //alert('Login successful!');
+          
+          // If "Remember me" is checked, store token in local storage
+          if (rememberMe) {
+            localStorage.setItem('authToken', data.token);
+          } else {
+            sessionStorage.setItem('authToken', data.token);
+          }
+
+          // Redirect to the homepage or dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          const errorData = await response.json();
+          alert('Error: ' + errorData.error);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+      }
+    });
+  </script>
+  <!-- Google Translation API Script -->
+<script>
+  const apiKey = 'AIzaSyC9yoGRDDWGz90FW5ZwSCz8U9O_RZ7PZsc';
+
+  // Store the original texts
+  let originalTexts = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const textElements = document.querySelectorAll('h1, h2, p, li, span, button, h3, h4, h5, h6, a');
+    textElements.forEach((el, index) => {
+      originalTexts.push({ text: el.innerText, element: el }); // Store both text and element reference
+    });
+  });
+
+  document.getElementById('languageDropdown').addEventListener('change', function() {
+    const languageCode = this.value;
+    if (languageCode) {
+      if (languageCode === 'en') {
+        resetToDefault();
+      } else {
+        translatePage(languageCode);
+      }
+    }
+  });
+
+  function resetToDefault() {
+    // Restore the original text
+    originalTexts.forEach(item => {
+      item.element.innerText = item.text;
+    });
+  }
+
+  function translatePage(languageCode) {
+    // Select only elements that should be translated, excluding links
+    const textElements = originalTexts
+      .filter(item => item.element.tagName.toLowerCase() !== 'a')
+      .map(item => item.element);
+
+    const textsToTranslate = textElements.map(el => el.innerText);
+
+    fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: textsToTranslate,
+        target: languageCode,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      const translations = data.data.translations;
+      translations.forEach((translation, index) => {
+        textElements[index].innerText = translation.translatedText;
+      });
+    })
+    .catch(error => console.error('Error translating:', error));
+  }
+</script>
+</body>
+</html>
